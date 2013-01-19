@@ -23,6 +23,7 @@ endif " }}}
 if !exists('g:vitality_fix_focus') " {{{
     let g:vitality_fix_focus = 1
 endif " }}}
+
 if !exists('g:vitality_change_colors') " {{{
     let g:vitality_change_colors = 1
 endif " }}}
@@ -33,12 +34,19 @@ let s:cursor_color_insertmode = "\<Esc>]12;". g:vitality_color_insertmode . "\x7
 if !exists('g:vitality_color_normalmode') " {{{
     let g:vitality_color_normalmode = "default"
 endif " }}}
-let s:cursor_color_default = "\<Esc>]112\007"
+
+if !exists('g:vitality_cursor_default') " {{{
+  let g:vitality_cursor_default = "\<Esc>]112\007"
+endif " }}}
 if g:vitality_color_normalmode == 'default'
-  let s:cursor_color_normalmode = s:cursor_color_default
+  let s:cursor_color_normalmode = g:vitality_cursor_default
 else
   let s:cursor_color_normalmode = "\<Esc>]12;". g:vitality_color_normalmode . "\x7"
 endif
+
+if !exists('g:vitality_tmux_can_focus') " {{{
+    let g:vitality_tmux_can_focus = 0
+endif " }}}
 
 let s:inside_xterm = exists('$XTERM_VERSION')
 let s:inside_iterm = exists('$ITERM_PROFILE')
@@ -47,6 +55,10 @@ let s:inside_tmux = exists('$TMUX')
 " }}}
 
 function! s:WrapForTmux(s) " {{{
+    if strlen(a:s) == 0
+        return ""
+    end
+
     " To escape a sequence through tmux:
     "
     " * Wrap it in these sequences.
@@ -70,10 +82,29 @@ function! s:Vitality() " {{{
     let enable_focus_reporting  = "\<Esc>[?1004h"
     let disable_focus_reporting = "\<Esc>[?1004l"
 
+    let tmux_enable_focus_reporting  = ""
+    let tmux_disable_focus_reporting = ""
+
+    if g:vitality_tmux_can_focus
+      let tmux_enable_focus_reporting  = enable_focus_reporting
+      let tmux_disable_focus_reporting = disable_focus_reporting
+    end
+
+    let iterm_enable_focus_reporting  = ""
+    let iterm_disable_focus_reporting = ""
+
+    if s:inside_iterm || s:inside_xterm
+      let iterm_enable_focus_reporting  = enable_focus_reporting
+      let iterm_disable_focus_reporting = disable_focus_reporting
+    endif
+
     " These sequences save/restore the screen.
     " They should NOT be wrapped in tmux escape sequences for some reason!
-    let save_screen    = "\<Esc>[?1049h"
-    let restore_screen = "\<Esc>[?1049l"
+    let original_save_screen    = &t_ti
+    let original_restore_screen = &t_te
+
+    let cursor_to_insertmode = ""
+    let cursor_to_normalmode = ""
 
     if s:inside_iterm
       " These sequences tell iTerm2 to change the cursor shape to a bar or block.
@@ -89,15 +120,15 @@ function! s:Vitality() " {{{
         " Some escape sequences (but not all, lol) need to be properly escaped
         " to get them through tmux without being eaten.
 
-        let enable_focus_reporting = s:WrapForTmux(enable_focus_reporting)
-        let disable_focus_reporting = s:WrapForTmux(disable_focus_reporting)
+        let iterm_enable_focus_reporting = s:WrapForTmux(iterm_enable_focus_reporting)
+        let iterm_disable_focus_reporting = s:WrapForTmux(iterm_disable_focus_reporting)
 
         let cursor_to_insertmode = s:WrapForTmux(cursor_to_insertmode)
         let cursor_to_normalmode = s:WrapForTmux(cursor_to_normalmode)
 
         let s:cursor_color_normalmode = s:WrapForTmux(s:cursor_color_normalmode)
         let s:cursor_color_insertmode = s:WrapForTmux(s:cursor_color_insertmode)
-        let s:cursor_color_default    = s:WrapForTmux(s:cursor_color_default)
+        let g:vitality_cursor_default  = s:WrapForTmux(g:vitality_cursor_default)
     endif
 
     " }}}
@@ -110,8 +141,8 @@ function! s:Vitality() " {{{
     " Trust me, you don't want to go down this rabbit hole.  Just keep them in
     " this order and no one gets hurt.
     if g:vitality_fix_focus
-        let &t_ti = s:cursor_color_normalmode . enable_focus_reporting . save_screen
-        let &t_te = s:cursor_color_default . disable_focus_reporting . restore_screen
+        let &t_ti = s:cursor_color_normalmode . tmux_enable_focus_reporting . iterm_enable_focus_reporting . original_save_screen
+        let &t_te = g:vitality_cursor_default . tmux_disable_focus_reporting . iterm_disable_focus_reporting . original_restore_screen
     endif
 
     " }}}
@@ -188,6 +219,6 @@ function s:DoCmdFocusGained()
     return cmd
 endfunction
 
-if s:inside_iterm || s:inside_xterm
+if s:inside_iterm || s:inside_xterm || (s:inside_tmux && g:vitality_tmux_can_focus)
     call s:Vitality()
 endif

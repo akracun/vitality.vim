@@ -27,6 +27,8 @@ CONTENTS                                                   *vitality-contents*
     2. Configuration ................... |VitalityConfig|
         2.1 g:vitality_fix_cursor ...... |vitality_fix_cursor|
         2.2 g:vitality_fix_focus ....... |vitality_fix_focus|
+        2.3 g:vitality_cursor_default .. |vitality_cursor_default|
+        2.4 g:vitality_tmux_can_focus .. |vitality_tmux_can_focus|
     3. How it Works .................... |VitalityHow|
     4. License ......................... |VitalityLicense|
     5. Bugs ............................ |VitalityBugs|
@@ -60,6 +62,8 @@ You can tweak the behavior of Vitality by setting a few variables in your
 
     let g:vitality_fix_cursor = 0
     let g:vitality_fix_focus = 0
+    let g:vitality_tmux_can_focus = 0
+    let g:vitality_cursor_default = "\<Esc>]112\007"
 
 ------------------------------------------------------------------------------
 2.1 g:vitality_fix_cursor                                *vitality_fix_cursor*
@@ -74,6 +78,22 @@ Default: 1
 Set this to 0 if you don't want focus events to be processed.
 
 Default: 1
+
+------------------------------------------------------------------------------
+2.3 g:vitality_cursor_default                        *vitality_cursor_default*
+
+Set this value to a terminal escape sequence that resets your cursor to a your
+prefered defaults state.
+
+Default: "\<Esc>]112\007"
+
+------------------------------------------------------------------------------
+2.4 g:vitality_tmux_can_focus                        *vitality_tmux_can_focus*
+
+Set this to 1 if you are running a version of tmux that supports focus 
+handling.
+
+Default: 0
 
 ==============================================================================
 3. How it Works                                                  *VitalityHow*
@@ -143,6 +163,9 @@ Restore screen (kind of) (8 bytes): >
 
 You can play with these in bash with echo -e "..." if you want.  Just remember
 to replace <Esc> with \033 and <C-G> with \007.
+
+More documentation on the matter may be found at:
+http://invisible-island.net/xterm/ctlseqs/ctlseqs.html
 
 ------------------------------------------------------------------------------
 2.2  YOU ARE IN A MAZE OF TWISTY LITTLE TERMINAL CODES, NONE ALIKE
