@@ -24,6 +24,19 @@ if !exists('g:vitality_fix_focus') " {{{
     let g:vitality_fix_focus = 1
 endif " }}}
 
+if !exists('g:vitality_iterm_focus_enable') " {{{
+    let g:vitality_iterm_focus_enable = "\<Esc>[?1004h"
+endif " }}}
+if !exists('g:vitality_iterm_focus_disable') " {{{
+    let g:vitality_iterm_focus_disable = "\<Esc>[?1004l"
+endif " }}}
+if !exists('g:vitality_tmux_focus_enable') " {{{
+    let g:vitality_tmux_focus_enable = "\<Esc>[?1004h"
+endif " }}}
+if !exists('g:vitality_tmux_focus_disable') " {{{
+    let g:vitality_tmux_focus_disable = "\<Esc>[?1004l"
+endif " }}}
+
 if !exists('g:vitality_change_colors') " {{{
     let g:vitality_change_colors = 1
 endif " }}}
@@ -79,23 +92,21 @@ function! s:Vitality() " {{{
     " and <Esc>[I when it gains focus.
     "
     " TODO: Look into how this works with iTerm tabs.  Seems a bit wonky.
-    let enable_focus_reporting  = "\<Esc>[?1004h"
-    let disable_focus_reporting = "\<Esc>[?1004l"
 
     let tmux_enable_focus_reporting  = ""
     let tmux_disable_focus_reporting = ""
 
     if g:vitality_tmux_can_focus
-      let tmux_enable_focus_reporting  = enable_focus_reporting
-      let tmux_disable_focus_reporting = disable_focus_reporting
+      let tmux_enable_focus_reporting  = g:vitality_tmux_focus_enable
+      let tmux_disable_focus_reporting = g:vitality_tmux_focus_disable
     end
 
     let iterm_enable_focus_reporting  = ""
     let iterm_disable_focus_reporting = ""
 
-    if s:inside_iterm || s:inside_xterm
-      let iterm_enable_focus_reporting  = enable_focus_reporting
-      let iterm_disable_focus_reporting = disable_focus_reporting
+    if s:inside_iterm || s:inside_xterm || exists('g:vitality_iterm_force_focus')
+      let iterm_enable_focus_reporting  = g:vitality_iterm_focus_enable
+      let iterm_disable_focus_reporting = g:vitality_iterm_focus_disable
     endif
 
     " These sequences save/restore the screen.

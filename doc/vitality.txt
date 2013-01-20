@@ -23,17 +23,22 @@
 ==============================================================================
 CONTENTS                                                   *vitality-contents*
 
-    1. Overview and Usage .............. |VitalityOverview|
-    2. Configuration ................... |VitalityConfig|
-        2.1 g:vitality_fix_cursor ...... |vitality_fix_cursor|
-        2.2 g:vitality_fix_focus ....... |vitality_fix_focus|
-        2.3 g:vitality_cursor_default .. |vitality_cursor_default|
-        2.4 g:vitality_tmux_can_focus .. |vitality_tmux_can_focus|
-    3. How it Works .................... |VitalityHow|
-    4. License ......................... |VitalityLicense|
-    5. Bugs ............................ |VitalityBugs|
-    6. Contributing .................... |VitalityContributing|
-    7. Changelog ....................... |VitalityChangelog|
+    1. Overview and Usage ................... |VitalityOverview|
+    2. Configuration ........................ |VitalityConfig|
+        2.1 g:vitality_fix_cursor ........... |vitality_fix_cursor|
+        2.2 g:vitality_fix_focus ............ |vitality_fix_focus|
+        2.3 g:vitality_cursor_default ....... |vitality_cursor_default|
+        2.4 g:vitality_tmux_can_focus ....... |vitality_tmux_can_focus|
+        2.5 g:vitality_iterm_force_focus .... |vitality_iterm_force_focus|
+        2.6 g:vitality_iterm_focus_enable ... |vitality_iterm_focus_enable|
+        2.7 g:vitality_iterm_focus_disable .. |vitality_iterm_focus_disable|
+        2.8 g:vitality_tmux_focus_enable .... |vitality_tmux_focus_enable|
+        2.9 g:vitality_tmux_focus_disable ... |vitality_tmux_focus_disable|
+    3. How it Works ......................... |VitalityHow|
+    4. License .............................. |VitalityLicense|
+    5. Bugs ................................. |VitalityBugs|
+    6. Contributing ......................... |VitalityContributing|
+    7. Changelog ............................ |VitalityChangelog|
 
 ==============================================================================
 1. Overview and Usage                       *VitalityOverview* *VitalityUsage*
@@ -62,8 +67,15 @@ You can tweak the behavior of Vitality by setting a few variables in your
 
     let g:vitality_fix_cursor = 0
     let g:vitality_fix_focus = 0
-    let g:vitality_tmux_can_focus = 0
     let g:vitality_cursor_default = "\<Esc>]112\007"
+
+    let g:vitality_tmux_can_focus = 0
+    unlet g:vitality_iterm_force_focus
+
+    let g:vitality_iterm_focus_enable  = "\<Esc>[?1004h"
+    let g:vitality_iterm_focus_disable = "\<Esc>[?1004l"
+    let g:vitality_tmux_focus_enable   = "\<Esc>[?1004h"
+    let g:vitality_tmux_focus_disable  = "\<Esc>[?1004l"  
 
 ------------------------------------------------------------------------------
 2.1 g:vitality_fix_cursor                                *vitality_fix_cursor*
@@ -94,6 +106,46 @@ Set this to 1 if you are running a version of tmux that supports focus
 handling.
 
 Default: 0
+
+------------------------------------------------------------------------------
+2.5 g:vitality_iterm_force_focus                  *vitality_iterm_force_focus*
+
+Set this to 1 if you want for force sending iterm's instructions for focus 
+handling.
+
+Default: undefined
+
+------------------------------------------------------------------------------
+2.6 g:vitality_iterm_focus_enable                 *vitality_iterm_force_focus*
+
+Set this value to a terminal escape sequence that enables focus notificaton
+for iTerm.
+
+Default: "\<Esc>[?1004h"
+
+------------------------------------------------------------------------------
+2.7 g:vitality_iterm_focus_disable                *vitality_iterm_force_focus*
+
+Set this value to a terminal escape sequence that disables focus notificaton
+for iTerm.
+
+Default: "\<Esc>[?1004l"
+
+------------------------------------------------------------------------------
+2.8 g:vitality_tmux_focus_enable                  *vitality_iterm_force_focus*
+
+Set this value to a terminal escape sequence that enables focus notificaton
+for tmux.
+
+Default: "\<Esc>[?1004h"
+
+------------------------------------------------------------------------------
+2.9 g:vitality_tmux_focus_disable                 *vitality_iterm_force_focus*
+
+Set this value to a terminal escape sequence that disables focus notificaton
+for tmux.
+
+Default: "\<Esc>[?1004l"  
 
 ==============================================================================
 3. How it Works                                                  *VitalityHow*
