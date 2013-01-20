@@ -35,6 +35,7 @@ CONTENTS                                                   *vitality-contents*
         2.8 g:vitality_tmux_focus_enable .... |vitality_tmux_focus_enable|
         2.9 g:vitality_tmux_focus_disable ... |vitality_tmux_focus_disable|
     3. How it Works ......................... |VitalityHow|
+        3.5 How it Works with rxvt-unicode .. |VitalityRxvt|
     4. License .............................. |VitalityLicense|
     5. Bugs ................................. |VitalityBugs|
     6. Contributing ......................... |VitalityContributing|
@@ -159,7 +160,7 @@ Turn back now or skip to the |VitalityLicense|.
 You've been warned.
 
 ------------------------------------------------------------------------------
-2.1  I WILL BE YOUR HANDS AND EYES
+3.1  I WILL BE YOUR HANDS AND EYES
 
 DISCLAIMER: I am not a terminal expert by any means.  Some of this may not be
             entirely correct.  However, it should at least give you a general
@@ -220,7 +221,7 @@ More documentation on the matter may be found at:
 http://invisible-island.net/xterm/ctlseqs/ctlseqs.html
 
 ------------------------------------------------------------------------------
-2.2  YOU ARE IN A MAZE OF TWISTY LITTLE TERMINAL CODES, NONE ALIKE
+3.2  YOU ARE IN A MAZE OF TWISTY LITTLE TERMINAL CODES, NONE ALIKE
 
 Before we get to how Vitality uses these codes, there's one other wrinkle to
 take care of: tmux.
@@ -268,7 +269,7 @@ restoring ones, however, need to go to tmux, because tmux is handling the
 drawing of the screen!
 
 ------------------------------------------------------------------------------
-2.3  IT IS PITCH BLACK
+3.3  IT IS PITCH BLACK
 
 The trickest part of Vitality is how it restores the |FocusGained| and
 |FocusLost| autocommands.
@@ -321,7 +322,7 @@ We can get around this by using a combination of Vim features.  But first:
 more background.
 
 ------------------------------------------------------------------------------
-2.4  YOU ARE LIKELY TO BE EATEN BY A GRUE
+3.4  YOU ARE LIKELY TO BE EATEN BY A GRUE
 
 When you press your right arrow key, what happens?  There's no "right" ASCII
 code, so how can it tell Vim that you pressed the arrow?
@@ -396,7 +397,7 @@ focus-reporting sequences to two of these higher F keys (F24 and F25 by
 default) and then maps those to the "fire the autocommand" functionality.
 
 ------------------------------------------------------------------------------
-2.4  WITH WHAT?  YOUR BARE HANDS?
+3.4  WITH WHAT?  YOUR BARE HANDS?
 
 Now that we know how all this stuff works we can put it all together.
 
@@ -422,6 +423,30 @@ All that's left is to map the focus-reporting keys as described in the last
 section and it's done!
 
 You now have a friendlier Vim/tmux/iTerm 2 environment!
+
+------------------------------------------------------------------------------
+3.5  How it Works with rxvt-unicode                             *VitalityRxvt*
+
+Included with this plugin is a rxvt-unicode perl extension that enables focus
+notification. 
+
+Please install this file to your urxvt*perl-lib directory and add the 
+extension to your urxvt*perl-ext.
+
+  ! Example .Xresource file
+  ! Reload using: xrdb ~/.Xresource
+  urxvt*perl-lib: /path/to/urxvt-perl-ext
+  urxvt*perl-ext: focus-notify
+
+Or launch rxvt using the following command
+
+  rxvt --perl-lib /path/to/urxvt-perl-ext/ -pe focus-notify 
+
+Then add the following to your vimrc
+
+  let g:vitality_iterm_force_focus = 1
+  let g:vitality_iterm_focus_enable  = "\<Esc>]777;focus-notify-on;\x7"
+  let g:vitality_iterm_focus_disable = "\<Esc>]777;focus-notify-off;\x7"
 
 ==============================================================================
 4. License                                                   *VitalityLicense*
