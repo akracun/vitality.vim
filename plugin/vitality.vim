@@ -230,6 +230,6 @@ function s:DoCmdFocusGained()
     return cmd
 endfunction
 
-if s:inside_iterm || s:inside_xterm || (s:inside_tmux && g:vitality_tmux_can_focus)
+if s:inside_iterm || s:inside_xterm || (s:inside_tmux && g:vitality_tmux_can_focus) || exists('g:vitality_iterm_force_focus')
     call s:Vitality()
 endif
