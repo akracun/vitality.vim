@@ -117,36 +117,42 @@ handling.
 Default: undefined
 
 ------------------------------------------------------------------------------
-2.6 g:vitality_iterm_focus_enable                 *vitality_iterm_force_focus*
+2.6 g:vitality_iterm_focus_enable                *vitality_iterm_focus_enable*
 
 Set this value to a terminal escape sequence that enables focus notificaton
 for iTerm.
 
+For iTerm or xTerm
 Default: "\<Esc>[?1004h"
+For xrvt-unicode
+Defualt: "\<Esc>]777;focus-notify-on;\x7"
 
 ------------------------------------------------------------------------------
-2.7 g:vitality_iterm_focus_disable                *vitality_iterm_force_focus*
+2.7 g:vitality_iterm_focus_disable              *vitality_iterm_focus_disable*
 
 Set this value to a terminal escape sequence that disables focus notificaton
 for iTerm.
+
+For iTerm or xTerm
+Default: "\<Esc>[?1004l"
+For xrvt-unicode
+Defualt: "\<Esc>]777;focus-notify-off;\x7"
+
+------------------------------------------------------------------------------
+2.8 g:vitality_tmux_focus_enable                  *vitality_tmux_focus_enable*
+
+Set this value to a terminal escape sequence that enables focus notificaton
+for tmux.
+
+Default: "\<Esc>[?1004h"
+
+------------------------------------------------------------------------------
+2.9 g:vitality_tmux_focus_disable                *vitality_tmux_focus_disable*
+
+Set this value to a terminal escape sequence that disables focus notificaton
+for tmux.
 
 Default: "\<Esc>[?1004l"
-
-------------------------------------------------------------------------------
-2.8 g:vitality_tmux_focus_enable                  *vitality_iterm_force_focus*
-
-Set this value to a terminal escape sequence that enables focus notificaton
-for tmux.
-
-Default: "\<Esc>[?1004h"
-
-------------------------------------------------------------------------------
-2.9 g:vitality_tmux_focus_disable                 *vitality_iterm_force_focus*
-
-Set this value to a terminal escape sequence that disables focus notificaton
-for tmux.
-
-Default: "\<Esc>[?1004l"  
 
 ==============================================================================
 3. How it Works                                                  *VitalityHow*

@@ -17,6 +17,11 @@ endif
 
 let loaded_vitality = 1
 
+let s:inside_xterm = exists('$XTERM_VERSION')
+let s:inside_iterm = exists('$ITERM_PROFILE')
+let s:inside_urxvt = match($COLORTERM, "^rxvt") == 0
+let s:inside_tmux = exists('$TMUX')
+
 if !exists('g:vitality_fix_cursor') " {{{
     let g:vitality_fix_cursor = 1
 endif " }}}
@@ -25,10 +30,18 @@ if !exists('g:vitality_fix_focus') " {{{
 endif " }}}
 
 if !exists('g:vitality_iterm_focus_enable') " {{{
+  if s:inside_iterm || s:inside_xterm
     let g:vitality_iterm_focus_enable = "\<Esc>[?1004h"
+  elseif s:inside_urxvt
+    let g:vitality_iterm_focus_enable  = "\<Esc>]777;focus-notify-on;\x7"
+  end
 endif " }}}
 if !exists('g:vitality_iterm_focus_disable') " {{{
+  if s:inside_iterm || s:inside_xterm
     let g:vitality_iterm_focus_disable = "\<Esc>[?1004l"
+  elseif s:inside_urxvt
+    let g:vitality_iterm_focus_disable = "\<Esc>]777;focus-notify-off;\x7"
+  end
 endif " }}}
 if !exists('g:vitality_tmux_focus_enable') " {{{
     let g:vitality_tmux_focus_enable = "\<Esc>[?1004h"
@@ -58,12 +71,15 @@ else
 endif
 
 if !exists('g:vitality_tmux_can_focus') " {{{
-    let g:vitality_tmux_can_focus = 0
-endif " }}}
+  let g:vitality_tmux_can_focus = 0
 
-let s:inside_xterm = exists('$XTERM_VERSION')
-let s:inside_iterm = exists('$ITERM_PROFILE')
-let s:inside_tmux = exists('$TMUX')
+  if s:inside_tmux
+    let focus_filter = system('tmux show-options -wg focus-filter')
+    if match(focus_filter, "^focus-filter on") == 0
+      let g:vitality_tmux_can_focus = 1
+    end
+  end
+endif " }}}
 
 " }}}
 
@@ -104,7 +120,7 @@ function! s:Vitality() " {{{
     let iterm_enable_focus_reporting  = ""
     let iterm_disable_focus_reporting = ""
 
-    if s:inside_iterm || s:inside_xterm || exists('g:vitality_iterm_force_focus')
+    if s:inside_iterm || s:inside_xterm || s:inside_urxvt || exists('g:vitality_iterm_force_focus')
       let iterm_enable_focus_reporting  = g:vitality_iterm_focus_enable
       let iterm_disable_focus_reporting = g:vitality_iterm_focus_disable
     endif
@@ -230,6 +246,6 @@ function s:DoCmdFocusGained()
     return cmd
 endfunction
 
-if s:inside_iterm || s:inside_xterm || (s:inside_tmux && g:vitality_tmux_can_focus) || exists('g:vitality_iterm_force_focus')
+if s:inside_iterm || s:inside_xterm || s:inside_urxvt || (s:inside_tmux && g:vitality_tmux_can_focus) || exists('g:vitality_iterm_force_focus')
     call s:Vitality()
 endif
