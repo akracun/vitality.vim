@@ -11,18 +11,17 @@ sub on_osc_seq_perl {
    my ($self, $osc, $resp) = @_;
 
    return unless $osc =~ s/^focus-notify-(on|off);//;
-  $enable_notify{$self->vt} = $1 eq 'on'?1:0;
+   $enable_notify{$self->vt} += $1 eq 'on'?1:-1;
 }
 
 sub on_focus_in {
   my $self = shift;
-  return unless $enable_notify{ $self->vt };
+  return unless $enable_notify{ $self->vt } > 0;
   $self->tt_write($self->locale_encode("\033[I"));
 }
 
 sub on_focus_out{
   my $self = shift;
-  return unless $enable_notify{ $self->vt };
+  return unless $enable_notify{ $self->vt } > 0;
   $self->tt_write($self->locale_encode("\033[O"));
 }
-

@@ -64,7 +64,7 @@ sometimes break.
 2. Configuration                                              *VitalityConfig*
 
 You can tweak the behavior of Vitality by setting a few variables in your
-:vimrc file. Currently two options are available: >
+:vimrc file. Currently a few options are available: >
 
     let g:vitality_fix_cursor = 0
     let g:vitality_fix_focus = 0
@@ -76,7 +76,7 @@ You can tweak the behavior of Vitality by setting a few variables in your
     let g:vitality_iterm_focus_enable  = "\<Esc>[?1004h"
     let g:vitality_iterm_focus_disable = "\<Esc>[?1004l"
     let g:vitality_tmux_focus_enable   = "\<Esc>[?1004h"
-    let g:vitality_tmux_focus_disable  = "\<Esc>[?1004l"  
+    let g:vitality_tmux_focus_disable  = "\<Esc>[?1004l"
 
 ------------------------------------------------------------------------------
 2.1 g:vitality_fix_cursor                                *vitality_fix_cursor*
@@ -103,7 +103,7 @@ Default: "\<Esc>]112\007"
 ------------------------------------------------------------------------------
 2.4 g:vitality_tmux_can_focus                        *vitality_tmux_can_focus*
 
-Set this to 1 if you are running a version of tmux that supports focus 
+Set this to 1 if you are running a version of tmux that supports focus
 handling.
 
 Default: 0
@@ -111,7 +111,7 @@ Default: 0
 ------------------------------------------------------------------------------
 2.5 g:vitality_iterm_force_focus                  *vitality_iterm_force_focus*
 
-Set this to 1 if you want for force sending iterm's instructions for focus 
+Set this to 1 if you want to force sending iterm's instructions for focus
 handling.
 
 Default: undefined
@@ -434,25 +434,53 @@ You now have a friendlier Vim/tmux/iTerm 2 environment!
 3.5  How it Works with rxvt-unicode                             *VitalityRxvt*
 
 Included with this plugin is a rxvt-unicode perl extension that enables focus
-notification. 
+notification.
 
-Please install this file to your urxvt*perl-lib directory and add the 
-extension to your urxvt*perl-ext.
+Please install this file in to the directory specified by the X RESOURCE
+"urxvt*perl-lib" and add tell rxvt to load this extension by adding it to
+"urxvt*perl-ext".
 
-  ! Example .Xresource file
-  ! Reload using: xrdb ~/.Xresource
-  urxvt*perl-lib: /path/to/urxvt-perl-ext
-  urxvt*perl-ext: focus-notify
+To accomplish this using configuration, please add the following to your
+~/.Xresources file:
 
-Or launch rxvt using the following command
+    ! Example .Xresource file
+    ! Reload using: xrdb ~/.Xresources
+    ! urxvt*perl-lib: $HOME/.urxvt/ext
+    urxvt*perl-ext: focus-notify
 
-  rxvt --perl-lib /path/to/urxvt-perl-ext/ -pe focus-notify 
+Alternatively, you may enable this extension manually using this command:
 
-Then add the following to your vimrc
+    rxvt --perl-lib /path/to/urxvt-perl-ext/ -pe focus-notify
 
-  let g:vitality_iterm_force_focus = 1
-  let g:vitality_iterm_focus_enable  = "\<Esc>]777;focus-notify-on;\x7"
-  let g:vitality_iterm_focus_disable = "\<Esc>]777;focus-notify-off;\x7"
+Please consult urxvt (1) and urxvt (7) for additional help.
+
+------------------------------------------------------------------------------
+3.6  How it Works with rxvt-unicode and tmux                *VitalityRxvtTmux*
+
+If you plan to use tmux inside of rxvt, please amend your tmux configuration
+file, usually $HOME/.tmux.conf.
+
+You will need to add rxvt specific "terminal-overrides" for variables "smcup"
+and "rmcup" which are the tmux equivalent of |t_ti| and |t_te|.
+These variables will be used to trigger the focus-notify urxvt perl extension
+mentioned in |VitalityRxvt| and thus must include these values
+
+    "smcup"  "\e]777;focus-notify-on;"
+    "rmcup"   "\e]777;focus-notify-off;"
+
+Here is an example of such configuration:
+
+    set-option -g terminal-overrides "rxvt*:smcup=\e]777;focus-notify-on;:rmcup=\e]777;focus-notify-off;"
+
+Note that the  character is the single ASCII character \x7 or BEL.
+
+To ensure proper behavior, review your present settings for "smcup" and
+"rmcup" using the infocmp utility. You may need to include these values
+in your "terminal-override".
+
+This configuration includes the default values of "smcup" and "rmcup":
+
+    set-option -g terminal-overrides "rxvt*:smcup=\e[?1049h\e]777;focus-notify-on;:rmcup=\e[r\e[?1049l\e]777;focus-notify-off;"
 
 ==============================================================================
 4. License                                                   *VitalityLicense*

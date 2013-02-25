@@ -22,6 +22,10 @@ let s:inside_iterm = exists('$ITERM_PROFILE')
 let s:inside_urxvt = match($COLORTERM, "^rxvt") == 0
 let s:inside_tmux = exists('$TMUX')
 
+if !exists('g:vitality_tmux_can_focus') " {{{
+  let g:vitality_tmux_can_focus = 0
+endif " }}}
+
 if !exists('g:vitality_fix_cursor') " {{{
     let g:vitality_fix_cursor = 1
 endif " }}}
@@ -30,17 +34,27 @@ if !exists('g:vitality_fix_focus') " {{{
 endif " }}}
 
 if !exists('g:vitality_iterm_focus_enable') " {{{
-  if s:inside_iterm || s:inside_xterm
-    let g:vitality_iterm_focus_enable = "\<Esc>[?1004h"
-  elseif s:inside_urxvt
-    let g:vitality_iterm_focus_enable  = "\<Esc>]777;focus-notify-on;\x7"
+  let g:vitality_iterm_focus_enable  = ""
+  if s:inside_tmux && g:vitality_tmux_can_focus
+    let g:vitality_iterm_focus_enable  = ""
+  else
+    if s:inside_iterm || s:inside_xterm
+      let g:vitality_iterm_focus_enable = "\<Esc>[?1004h"
+    elseif s:inside_urxvt
+        let g:vitality_iterm_focus_enable  = "\<Esc>]777;focus-notify-on;\x7"
+    end
   end
 endif " }}}
 if !exists('g:vitality_iterm_focus_disable') " {{{
-  if s:inside_iterm || s:inside_xterm
-    let g:vitality_iterm_focus_disable = "\<Esc>[?1004l"
-  elseif s:inside_urxvt
-    let g:vitality_iterm_focus_disable = "\<Esc>]777;focus-notify-off;\x7"
+  let g:vitality_iterm_focus_disable = ""
+  if s:inside_tmux && g:vitality_tmux_can_focus
+    let g:vitality_iterm_focus_disable = ""
+  else
+    if s:inside_iterm || s:inside_xterm
+      let g:vitality_iterm_focus_disable = "\<Esc>[?1004l"
+    elseif s:inside_urxvt
+      let g:vitality_iterm_focus_disable = "\<Esc>]777;focus-notify-off;\x7"
+    end
   end
 endif " }}}
 if !exists('g:vitality_tmux_focus_enable') " {{{
@@ -69,17 +83,6 @@ if g:vitality_color_normalmode == 'default'
 else
   let s:cursor_color_normalmode = "\<Esc>]12;". g:vitality_color_normalmode . "\x7"
 endif
-
-if !exists('g:vitality_tmux_can_focus') " {{{
-  let g:vitality_tmux_can_focus = 0
-
-  if s:inside_tmux
-    let focus_filter = system('tmux show-options -wg focus-filter')
-    if match(focus_filter, "^focus-filter on") == 0
-      let g:vitality_tmux_can_focus = 1
-    end
-  end
-endif " }}}
 
 " }}}
 
