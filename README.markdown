@@ -1,8 +1,8 @@
 Vitality
 ========
 
-(Vit)ality is a plugin that makes (V)im play nicely with (i)Term 2 and
-(t)mux.
+(Vit)ality is a plugin that makes (V)im play nicely with (i)Term 2, xterm, urxvt,
+and (t)mux.
 
 Features
 --------
